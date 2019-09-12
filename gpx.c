@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	{
 		// printf("%c", buffer);
 		
-		if (isprint(buffer)) {
+		if (isspace(buffer) == 0) {
 		// isprint takes care of the whitespace edge cases
 
 			switch (curr_action)
@@ -115,7 +115,14 @@ int main(int argc, char **argv)
 					}
 					else
 					{
-						printf("%c",buffer);
+						if ((curr_tag == TIME_START) && (buffer == ','))
+						{
+							printf("&comma");
+						}
+						else
+						{
+							printf("%c", buffer);
+						}
 					}
 				break;	
 			}
