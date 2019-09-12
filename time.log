@@ -1,12 +1,37 @@
-ESTIMATE of time to complete assignment: x hours
+ESTIMATE of time to complete assignment: 10 hours
 
       Time     Time
 Date  Started  Spent Work completed
 ----  -------  ----  --------------
-9/8   9:00PM   1.5h  Thinking about state machines and reading pset
-9/11  8:00PM   3.5h  Implemented modified state machine and created first
+9/8   9:00PM   1:30  Thinking about state machines and reading pset
+9/10  8:00PM   2:00  Another brainstorming session and created layout
+                     of "co-state" machine
+9/11  8:00PM   3:30  Implemented modified state machine and created first
                      working version of program that successfullly 
                      outputted same output on assignment page.
-
+9/12  10:00AM  3:00  Worked through the failed public test cases (espaping
+                     commas, single/double quotes, single quote in double
+                     quote, attributes in <ele>. Code now passes all public
+                     tests.
                ----
-               x  TOTAL time spent
+               10:00 TOTAL time spent
+
+I discussed my solution with: Eric Zhang and James Han
+
+The first part of the pset was to figure out a state machine system that
+would be straight-foward enough to follow, but not take up a massive amount
+of code. My first approach was to treat each individual characters (i.e. <,
+t,r,k,p,t,etc.) as individual states, but that would have been a nightmare
+code, so I ended up using a "co-state" machine where one state described
+generally what the program was doing, in this case either looking for
+"checkpoints" or writing out the char stream from stdin, while the other
+state involved what "checkpoint" the program was looking for or was going to
+look for. My biggest debugging challange were figuring out at which
+specific states my program was going awry at, where I had to use many 
+printf statements to determine what my program was (or wasn't) doing. My
+biggest specific bug was caused by having the "exit character", or the
+char that signals an end to the WRITING state be included in the beginning
+of a checkpoint string, since the program jumped over that char, making the
+READING state fail to find the beginning character of that checkpoint
+string.
+
