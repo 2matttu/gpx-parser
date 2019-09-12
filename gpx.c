@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 					{
 						if ((curr_tag == TRKPT) && (buffer == ','))
 						{
-							printf("&comma");
+							printf("&comma;");
 						}
 						else
 						{
