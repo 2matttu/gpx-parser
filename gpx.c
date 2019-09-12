@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum {LOOK_LESS, LOOK_A, ATLAT, LOOKLON, ATLON, LOOKTIME, ATTIME} state;
-typedef enum {L
+typedef enum {LOOKING, WRITING} action;
+typedef enum {TRKPT, LAT, LON, ELE_START, ELE_END, TIME_START, TIME_END} tag;
 
 /* states for the FSM:
  * LOOKTRKPT: looking for "<trkpt "
@@ -16,10 +16,139 @@ typedef enum {L
  */
 
 int main(int argc, char **argv)
-    {
+{
     //current state of FSM
-    state curr = LOOKTRKPT;
-    return 0;
+	action curr_action = LOOKING;
+	tag curr_tag = TRKPT;
 
-    //index of currently read sample
+	char *wanted_string_lower = "<trkpt";
+	char *wanted_string_upper = "<TRKPT";
+	int wanted_string_length = 6;
+
+	int index = 0;
+
+	int debugger = 0;
+
+
+	char exit_char = '\"';
+
+	char buffer;
+
+	while (scanf("%c", &buffer) != EOF)	
+	{
+		// printf("%c", buffer);
+		// if ((buffer =! ' ')) {
+
+			switch (curr_action)
+			{
+				case LOOKING:
+					debugger++;
+					if ((buffer == wanted_string_lower[index]) || (buffer == wanted_string_upper[index]))
+					{
+						if (index + 1 == wanted_string_length)
+						{
+							//i.e. go on to LOOKING for another tag or WRITING the buffer to stdout
+							//change wanted_string_lower, wanted_string_upper, wanted_string_length, exit_char
+							switch (curr_tag)
+							{
+								case TRKPT:
+									curr_tag = LAT;
+									wanted_string_lower = "lat=\"";
+									wanted_string_upper = "LAT=\"";
+									wanted_string_length = 5;
+									//starts LOOKING for LAT
+								break;
+
+								case LAT:
+									curr_action = WRITING;
+									curr_tag = LON;
+									wanted_string_lower = "lon=\"";
+									wanted_string_upper = "LON=\"";
+									wanted_string_length = 5;
+									//starts WRITING from LAT
+								break;
+
+								case LON:
+									curr_action = WRITING;
+									curr_tag = ELE_START;
+									wanted_string_lower = "<ele>";
+									wanted_string_upper = "<ELE>";
+									wanted_string_length = 5;
+									//starts WRITING from LON
+								break;
+
+								case ELE_START:
+									curr_action = WRITING;
+									curr_tag = ELE_END;
+									wanted_string_lower = "</ele>";
+									wanted_string_upper = "</ELE>";
+									wanted_string_length = 6;
+									exit_char = '<';
+									//starts WRITING from ELE_START
+								break;
+
+								case ELE_END:
+									curr_tag = TIME_START;
+									wanted_string_lower = "<time>";
+									wanted_string_upper = "<TIME>";
+									wanted_string_length = 6;
+									//starts LOOKING for TIME_START
+								break;
+
+								case TIME_START:
+									curr_action = WRITING;
+									curr_tag = TIME_END;
+									wanted_string_lower = "</time>";
+									wanted_string_upper = "</TIME>";
+									wanted_string_length = 7;
+									//starts WRITING from TIME_START
+								break;
+
+								case TIME_END:
+									curr_tag = TRKPT;
+									wanted_string_lower = "<trkpt";
+									wanted_string_upper = "<TRKPT";
+									wanted_string_length = 6;
+									//starts LOOKING for TRKPT
+									printf("I am now looking for trkpt");
+								break;
+							}
+							index = 0;
+						}
+						else
+						{
+							index++;
+						}
+					}
+					else
+					{
+						index = 0;
+					}
+				break;
+
+				case WRITING:
+					if (buffer == exit_char)
+					{
+						curr_action = LOOKING;
+						if (curr_tag == TRKPT)
+						{
+							printf("\n"); //prints newline before each latitude readout (i.e. when curr_tag equals TRKPT)
+						}
+						else
+						{
+							printf(",");
+						}
+						//LOOKING cases take care of changing curr_tag, wanted_string and so on
+					}
+					else
+					{
+						printf("%c",buffer);
+					}
+				break;	
+				
+			}
+		// }
+	}
+	printf("%i",debugger);
+	return 0;
 }
