@@ -42,19 +42,26 @@ int main(int argc, char **argv)
 							{
 								case TRKPT:
 									curr_tag = LAT;
-									wanted_string_lower = "lat=\"";
+									wanted_string_lower = "lat=\'";
 									wanted_string_upper = "LAT=\"";
 									wanted_string_length = 5;
-									exit_char = '\"';
 									//starts LOOKING for LAT
 								break;
 
 								case LAT:
 									curr_action = WRITING;
 									curr_tag = LON;
-									wanted_string_lower = "lon=\"";
+									wanted_string_lower = "lon=\'";
 									wanted_string_upper = "LON=\"";
 									wanted_string_length = 5;
+									if (buffer=='\'')
+									{
+										exit_char = '\'';
+									}
+									else
+									{
+										exit_char = '\"';
+									}	
 									//starts WRITING from LAT
 								break;
 
@@ -64,6 +71,14 @@ int main(int argc, char **argv)
 									wanted_string_lower = "<ele>";
 									wanted_string_upper = "<ELE>";
 									wanted_string_length = 5;
+									if (buffer=='\'')
+									{
+										exit_char = '\'';
+									}
+									else
+									{
+										exit_char = '\"';
+									}
 									//starts WRITING from LON
 								break;
 
