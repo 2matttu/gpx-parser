@@ -1,19 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 typedef enum {LOOKING, WRITING} action;
-typedef enum {TRKPT, LAT, LON, ELE_START, ELE_END, TIME_START} tag;
-
-/* states for the FSM:
- * LOOKTRKPT: looking for "<trkpt "
- * LOOKLAT: looking for "lat" attribute
- * ATLAT: recording "lat" attribute
- * LOOKLON: looking for "lat" attribute
- * ATLON: recording "lon" attribute
- * LOOKTIME: looking for "<time>" tag
- * ATTIME: recording "time"
- */
+typedef enum {TRKPT, LAT, LON, ELE_START, TIME_START} tag;
 
 int main(int argc, char **argv)
 {
@@ -34,7 +25,9 @@ int main(int argc, char **argv)
 	while (scanf("%c", &buffer) != EOF)	
 	{
 		// printf("%c", buffer);
-		// if ((buffer =! ' ')) {
+		
+		if (isprint(buffer)) {
+		// isprint takes care of the whitespace edge cases
 
 			switch (curr_action)
 			{
@@ -52,6 +45,7 @@ int main(int argc, char **argv)
 									wanted_string_lower = "lat=\"";
 									wanted_string_upper = "LAT=\"";
 									wanted_string_length = 5;
+									exit_char = '\"';
 									//starts LOOKING for LAT
 								break;
 
@@ -75,20 +69,12 @@ int main(int argc, char **argv)
 
 								case ELE_START:
 									curr_action = WRITING;
-									curr_tag = ELE_END;
-									wanted_string_lower = "</ele>";
-									wanted_string_upper = "</ELE>";
-									wanted_string_length = 6;
-									exit_char = '<';
-									//starts WRITING from ELE_START
-								break;
-
-								case ELE_END:
 									curr_tag = TIME_START;
 									wanted_string_lower = "<time>";
 									wanted_string_upper = "<TIME>";
 									wanted_string_length = 6;
-									//starts LOOKING for TIME_START
+									exit_char = '<';
+									//starts WRITING from ELE_START
 								break;
 
 								case TIME_START:
@@ -117,13 +103,13 @@ int main(int argc, char **argv)
 					if (buffer == exit_char)
 					{
 						curr_action = LOOKING;
-						if (strcmp(wanted_string_lower,"<trkpt") == 0)
+						if (curr_tag == TRKPT)
 						{
 							printf("\n"); //prints newline before each latitude readout (i.e. when curr_tag equals TRKPT)
 						}
 						else
 						{
-							printf("\n");
+							printf(",");
 						}
 						//LOOKING cases take care of changing curr_tag, wanted_string and so on
 					}
@@ -132,9 +118,8 @@ int main(int argc, char **argv)
 						printf("%c",buffer);
 					}
 				break;	
-				
 			}
-		// }
+		}
 	}
 	return 0;
 }

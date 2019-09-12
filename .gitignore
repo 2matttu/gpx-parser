@@ -2,6 +2,8 @@
 *
 
 # but not gpx.c
+!makefile
+!time.log
 !gpx.c
 !gpx2.c
 !.gitignore
