@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 					}
 					else
 					{
-						if ((curr_tag == TIME_START) && (buffer == ','))
+						if ((curr_tag == TRKPT) && (buffer == ','))
 						{
 							printf("&comma");
 						}
