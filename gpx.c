@@ -3,7 +3,7 @@
 #include <string.h>
 
 typedef enum {LOOKING, WRITING} action;
-typedef enum {TRKPT, LAT, LON, ELE_START, ELE_END, TIME_START, TIME_END} tag;
+typedef enum {TRKPT, LAT, LON, ELE_START, ELE_END, TIME_START} tag;
 
 /* states for the FSM:
  * LOOKTRKPT: looking for "<trkpt "
@@ -27,9 +27,6 @@ int main(int argc, char **argv)
 
 	int index = 0;
 
-	int debugger = 0;
-
-
 	char exit_char = '\"';
 
 	char buffer;
@@ -42,7 +39,6 @@ int main(int argc, char **argv)
 			switch (curr_action)
 			{
 				case LOOKING:
-					debugger++;
 					if ((buffer == wanted_string_lower[index]) || (buffer == wanted_string_upper[index]))
 					{
 						if (index + 1 == wanted_string_length)
@@ -97,20 +93,11 @@ int main(int argc, char **argv)
 
 								case TIME_START:
 									curr_action = WRITING;
-									curr_tag = TIME_END;
-									wanted_string_lower = "</time>";
-									wanted_string_upper = "</TIME>";
-									wanted_string_length = 7;
-									//starts WRITING from TIME_START
-								break;
-
-								case TIME_END:
 									curr_tag = TRKPT;
 									wanted_string_lower = "<trkpt";
 									wanted_string_upper = "<TRKPT";
 									wanted_string_length = 6;
-									//starts LOOKING for TRKPT
-									printf("I am now looking for trkpt");
+									//starts WRITING from TIME_START
 								break;
 							}
 							index = 0;
@@ -130,13 +117,13 @@ int main(int argc, char **argv)
 					if (buffer == exit_char)
 					{
 						curr_action = LOOKING;
-						if (curr_tag == TRKPT)
+						if (strcmp(wanted_string_lower,"<trkpt") == 0)
 						{
 							printf("\n"); //prints newline before each latitude readout (i.e. when curr_tag equals TRKPT)
 						}
 						else
 						{
-							printf(",");
+							printf("\n");
 						}
 						//LOOKING cases take care of changing curr_tag, wanted_string and so on
 					}
@@ -149,6 +136,5 @@ int main(int argc, char **argv)
 			}
 		// }
 	}
-	printf("%i",debugger);
 	return 0;
 }
