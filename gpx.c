@@ -16,6 +16,9 @@ int main(int argc, char **argv)
 	char *wanted_string_upper = "<TRKPT";
 	int wanted_string_length = 6;
 
+	int in_nested_quotes = 0;
+	char in_nested_quotes_type = '\'';
+
 	int index = 0;
 
 	char exit_char = '\"';
@@ -26,7 +29,8 @@ int main(int argc, char **argv)
 	{
 		// printf("%c", buffer);
 		
-		if (isspace(buffer) == 0) {
+		if (isspace(buffer) == 0) 
+		{
 		// isprint takes care of the whitespace edge cases
 
 			switch (curr_action)
@@ -49,37 +53,43 @@ int main(int argc, char **argv)
 								break;
 
 								case LAT:
-									curr_action = WRITING;
-									curr_tag = LON;
-									wanted_string_lower = "lon=\'";
-									wanted_string_upper = "LON=\"";
-									wanted_string_length = 5;
-									if (buffer=='\'')
+									if (in_nested_quotes == 0) //makes sure not in nested quotes
 									{
-										exit_char = '\'';
+										curr_action = WRITING;
+										curr_tag = LON;
+										wanted_string_lower = "lon=\'";
+										wanted_string_upper = "LON=\"";
+										wanted_string_length = 5;
+										if (buffer=='\'')
+										{
+											exit_char = '\'';
+										}
+										else
+										{
+											exit_char = '\"';
+										}	
+										//starts WRITING from LAT
 									}
-									else
-									{
-										exit_char = '\"';
-									}	
-									//starts WRITING from LAT
 								break;
 
 								case LON:
-									curr_action = WRITING;
-									curr_tag = ELE_START;
-									wanted_string_lower = "<ele>";
-									wanted_string_upper = "<ELE>";
-									wanted_string_length = 5;
-									if (buffer=='\'')
+									if (in_nested_quotes == 0)
 									{
-										exit_char = '\'';
+										curr_action = WRITING;
+										curr_tag = ELE_START;
+										wanted_string_lower = "<ele>";
+										wanted_string_upper = "<ELE>";
+										wanted_string_length = 5;
+										if (buffer=='\'')
+										{
+											exit_char = '\'';
+										}
+										else
+										{
+											exit_char = '\"';
+										}
+										//starts WRITING from LON
 									}
-									else
-									{
-										exit_char = '\"';
-									}
-									//starts WRITING from LON
 								break;
 
 								case ELE_START:
@@ -108,8 +118,23 @@ int main(int argc, char **argv)
 							index++;
 						}
 					}
-					else
+					else //buffer doesn't match up with char
 					{
+						if(((curr_tag == LAT) || (curr_tag == LON)) && (buffer == '\"' || buffer == '\''))
+						{
+							if(in_nested_quotes == 0)
+							{
+								in_nested_quotes = 1;
+								in_nested_quotes_type = buffer;
+							}
+							else //already in nested quotes
+							{
+								if (buffer == in_nested_quotes_type) //if buffer char is same as opening quote type
+								{
+									in_nested_quotes = 0; //not in nested quotes anymore
+								}				
+							}
+						}
 						index = 0;
 					}
 				break;
