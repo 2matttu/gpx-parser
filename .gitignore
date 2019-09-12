@@ -3,4 +3,5 @@
 
 # but not gpx.c
 !gpx.c
+!gpx2.c
 !.gitignore
