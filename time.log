@@ -1,4 +1,4 @@
-ESTIMATE of time to complete assignment: 10 hours
+ESTIMATE of time to complete assignment: 12 hours
 
       Time     Time
 Date  Started  Spent Work completed
@@ -13,10 +13,11 @@ Date  Started  Spent Work completed
                      commas, single/double quotes, single quote in double
                      quote, attributes in <ele>. Code now passes all public
                      tests.
+9/19  4:00PM   2:00  Fixed an edge case Brian Zhu came up with.
                ----
-               10:00 TOTAL time spent
+               12:00 TOTAL time spent
 
-I discussed my solution with: Eric Zhang and James Han
+I discussed my solution with: Eric Zhang, James Han, Brian Zhu
 
 The first part of the pset was to figure out a state machine system that
 would be straight-foward enough to follow, but not take up a massive amount

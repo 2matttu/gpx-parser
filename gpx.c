@@ -7,7 +7,6 @@ typedef enum {LOOKING, WRITING} action;
 typedef enum {TRKPT, LAT, LON, ELE_START, ELE_END, TIME_START, TIME_END} tag;
 
 /*
-
 Set of action states:
 LOOKING: Actively looking for (i.e. not writing) certain character (specified by "tag" states)
 WRITING: Actively writing chars from input stream to output stream
@@ -46,6 +45,7 @@ int main(int argc, char **argv)
 
 	//variables to check whether either the lat or lon attributes are actually nested in another attribute's value
 	int in_nested_quotes = 0;
+	int diff_att = 0;
 	char in_nested_quotes_type = '\'';
 
 	//index of checkpoint string to be checked
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 			{
 				case LOOKING:
 					if ((buffer == wanted_string_lower[index]) || (buffer == wanted_string_upper[index]))
-					{
+					{	
 						if (index + 1 == wanted_string_length)
 						{
 							//go on to LOOKING for another tag or WRITING the buffer to stdout
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 								break;
 
 								case LAT:
-									if (in_nested_quotes == 0) //makes sure not in nested quotes
+									if (diff_att == 0)
 									{
 										curr_action = WRITING;
 										curr_tag = LON;
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 								break;
 
 								case LON:
-									if (in_nested_quotes == 0)
+									if (diff_att == 0)
 									{
 										curr_action = WRITING;
 										curr_tag = ELE_START;
@@ -164,19 +164,11 @@ int main(int argc, char **argv)
 					}
 					else //buffer doesn't match up with char
 					{
-						if(((curr_tag == LAT) || (curr_tag == LON)) && (buffer == '\"' || buffer == '\''))
+						if ((curr_tag == LAT) || (curr_tag == LON))
 						{
-							if(in_nested_quotes == 0)
+							if (diff_att == 0)
 							{
-								in_nested_quotes = 1;
-								in_nested_quotes_type = buffer;
-							}
-							else //already in nested quotes
-							{
-								if (buffer == in_nested_quotes_type) //if buffer char is same as opening quote type
-								{
-									in_nested_quotes = 0; //not in nested quotes anymore
-								}				
+								diff_att = 1;
 							}
 						}
 						index = 0; //program has to start matching first character of checkpoint string again
@@ -209,6 +201,19 @@ int main(int argc, char **argv)
 						}
 					}
 				break;	
+			}
+			if (((curr_tag == LAT) || (curr_tag == LON)) && diff_att == 1)
+			{
+				if ((buffer == '\"' || buffer == '\'') && in_nested_quotes == 0)
+				{
+					in_nested_quotes = 1;
+					in_nested_quotes_type = buffer;
+				}
+				else if (buffer == in_nested_quotes_type && in_nested_quotes == 1)
+				{
+					in_nested_quotes = 0;
+					diff_att = 0;
+				}
 			}
 		}
 	}
