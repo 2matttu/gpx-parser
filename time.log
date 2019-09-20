@@ -14,6 +14,7 @@ Date  Started  Spent Work completed
                      quote, attributes in <ele>. Code now passes all public
                      tests.
 9/19  4:00PM   2:00  Fixed an edge case Brian Zhu came up with.
+9/20  12:20AM  0:30  Fixed an edge case James Han shared.
                ----
                12:00 TOTAL time spent
 

@@ -131,12 +131,15 @@ int main(int argc, char **argv)
 								break;
 
 								case ELE_END:
-									curr_action = WRITING;
-									curr_tag = TIME_START;
-									wanted_string_lower = "<time";
-									wanted_string_upper = "<TIME";
-									wanted_string_length = 5;
-									//starts WRITING from ELE_END
+									if (diff_att == 0)
+									{
+										curr_action = WRITING;
+										curr_tag = TIME_START;
+										wanted_string_lower = "<time";
+										wanted_string_upper = "<TIME";
+										wanted_string_length = 5;
+										//starts WRITING from ELE_END
+									}
 								break;
 
 								case TIME_START:
@@ -148,12 +151,15 @@ int main(int argc, char **argv)
 								break;
 
 								case TIME_END:
-									curr_action = WRITING;
-									curr_tag = TRKPT;
-									wanted_string_lower = "<trkpt";
-									wanted_string_upper = "<TRKPT";
-									wanted_string_length = 6;
-									//starts WRITING from TIME_END
+									if (diff_att == 0)
+									{
+										curr_action = WRITING;
+										curr_tag = TRKPT;
+										wanted_string_lower = "<trkpt";
+										wanted_string_upper = "<TRKPT";
+										wanted_string_length = 6;
+										//starts WRITING from TIME_END
+									}
 							}
 							index = 0; //resets index so it knows to look for the first character of the checkpoint string
 						}
@@ -164,7 +170,7 @@ int main(int argc, char **argv)
 					}
 					else //buffer doesn't match up with char
 					{
-						if ((curr_tag == LAT) || (curr_tag == LON))
+						if ((curr_tag == LAT) || (curr_tag == LON) || (curr_tag == ELE_END) || (curr_tag == TIME_END))
 						{
 							if (diff_att == 0)
 							{
@@ -202,7 +208,7 @@ int main(int argc, char **argv)
 					}
 				break;	
 			}
-			if (((curr_tag == LAT) || (curr_tag == LON)) && diff_att == 1)
+			if (((curr_tag == LAT) || (curr_tag == LON) || (curr_tag == ELE_END) || (curr_tag == TIME_END)) && diff_att == 1)
 			{
 				if ((buffer == '\"' || buffer == '\'') && in_nested_quotes == 0)
 				{
